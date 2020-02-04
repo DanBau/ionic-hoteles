@@ -1,0 +1,49 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons>
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title slot="primary">
+      Listado de Hoteles
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+
+  <ion-content>
+    <ion-card class="welcome-card">
+      <ion-slides pager="true" [options]="slideOpts">
+        <ion-slide *ngFor="let hotel of hoteles">
+          <ion-card-content> 
+            <ion-title size="large" color="primary" background="primary">{{ hotel.nombre }}</ion-title>
+  
+            <img src="{{ hotel.image }}" alt="h1"><br>
+           
+          </ion-card-content>
+        </ion-slide>
+      </ion-slides>
+    </ion-card>
+
+  <div class="ion-padding">
+    <ion-list>
+      <ion-list-header>
+        <ion-title>
+          Listado de Hoteles
+        </ion-title>
+      </ion-list-header>
+      <ion-item *ngFor="let hotel of hoteles" (click)="hotelTapped(hotel)">
+        <ion-thumbnail slot="start">
+          <img src="{{hotel.image}}">
+        </ion-thumbnail>
+        <ion-label> {{hotel.nombre}}</ion-label>
+      </ion-item>
+    </ion-list>
+  </div>
+
+</ion-content>
+<ion-toolbar>
+  <img src="/assets/images/4Vientos_iconoBlanco.PNG" />
+  <ion-title slot="primary">
+    Hoteles Dabb
+  </ion-title>
+</ion-toolbar>
