@@ -12,20 +12,21 @@ import { ToastController } from '@ionic/angular';
 })
 export class DetailsPage implements OnInit {
 
-  id: string;
+  id: number;
   public hotel: IHotel;
 
   constructor(
-    private activatedrouter: ActivatedRoute,
+    private activatedroute: ActivatedRoute,
     private router: Router,
     private hoteldbService: HoteldbService,
     public toastController: ToastController
   ) { }
 
   ngOnInit() {
-    this.id = this.activatedrouter.snapshot.params.id;
-    this.hoteldbService.getItem(this.id).then(
-      (data: IHotel) => this.hotel = data);
+    this.id = parseInt(this.activatedroute.snapshot.params['id']);
+    this.hoteldbService.getHotelById(this.id).subscribe(
+      (data: IHotel) => this.hotel = data
+    );
   }
 
   editRecord(hotel) {
@@ -41,7 +42,7 @@ export class DetailsPage implements OnInit {
           icon: 'delete',
           text: 'ACEPTAR',
           handler: () => {
-            this.hoteldbService.remove(id);
+            this.hoteldbService.deleteHotel(id);
             this.router.navigate(['home']);
           }
         }, {

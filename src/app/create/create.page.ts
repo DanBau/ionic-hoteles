@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { HoteldbService } from '../core/hoteldb.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { IHotel } from '../share/interfaces';
 
@@ -15,9 +15,12 @@ export class CreatePage implements OnInit {
 
   hotel: IHotel;
   hotelForm: FormGroup;
+  errorMessage: string;
+  id:number;
 
   constructor(private router: Router,
     private hoteldbService: HoteldbService,
+    private activatedroute: ActivatedRoute,
     public toastController: ToastController) { }
 
   ngOnInit() {
@@ -29,6 +32,7 @@ export class CreatePage implements OnInit {
       estrellas: new FormControl(''),
       precio: new FormControl(''),
     });
+    this.id = parseInt(this.activatedroute.snapshot.params['productId']);
   }
   async onSubmit() {
     const toast = await this.toastController.create({
@@ -55,11 +59,28 @@ export class CreatePage implements OnInit {
     toast.present();
   }
   saveHotel() {
-    this.hotel = this.hotelForm.value;
-    let nextKey = this.hotel.nombre.trim();
-    this.hotel.id = nextKey;
-    this.hoteldbService.setItem(nextKey, this.hotel);
-    console.warn(this.hotelForm.value);
+    if (this.hotelForm.valid) {
+      if (this.hotelForm.dirty) {
+        this.hotel = this.hotelForm.value;
+        this.hotel.id = this.id;
+        
+        this.hoteldbService.createHotel(this.hotel)
+          .subscribe(
+            () => this.onSaveComplete(),
+            (error: any) => this.errorMessage = <any>error
+          );
+        
+      } else {
+        this.onSaveComplete();
+      }
+    } else {
+      this.errorMessage = 'Please correct the validation errors.';
+    }
+  }
+  onSaveComplete(): void {
+    // Reset the form to clear the flags
+    this.hotelForm.reset();
+    this.router.navigate(['']);
   }
 }
 

@@ -1,70 +1,89 @@
-import { Injectable } from '@angular/core';
 import { IHotel } from '../share/interfaces';
-import { Storage } from '@ionic/storage';
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, tap, map } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root'
 })
 export class HoteldbService {
-  auxHotel: IHotel;
-  auxHotelList: IHotel[] = [];
-  constructor(private storage: Storage) { }
-  // Stores a value
-  setItem(reference: string, value: IHotel) {
-    this.storage.set(reference, {
-      id: value.id,
-      nombre: value.nombre,
-      ciudad:value.ciudad,
-      image: value.image,
-      capacidad: value.capacidad,
-      estrellas:value.estrellas,
-      precio:value.precio
-    })
-      .then(
-        (data) => console.log('Stored first item!', data),
-        error => console.error('Error storing item', error)
+  private hotelsUrl = 'api/hotels';
+
+  constructor(private http: HttpClient) { }
+
+  getHotels(): Observable<IHotel[]> {
+    return this.http.get<IHotel[]>(this.hotelsUrl)
+      .pipe(
+        tap(data => console.log(JSON.stringify(data))),
+        catchError(this.handleError)
       );
   }
-  // Gets a stored item
-  getItem(reference): Promise<IHotel> {
-    return this.storage.get(reference);
+
+  getMaxHotelId(): Observable<IHotel> {
+    return this.http.get<IHotel[]>(this.hotelsUrl)
+    .pipe(
+      // Get max value from an array
+      map(data => Math.max.apply(Math, data.map(function(o) { return o.id; }))   ),
+      catchError(this.handleError)
+    );
   }
-  // check if it is empty
-  empty() {
-    return this.storage.keys()
-      .then(
-        (data) => { return true },
-        error => { return false }
+
+  getHotelById(id: number): Observable<IHotel> {
+    const url = `${this.hotelsUrl}/${id}`;
+    return this.http.get<IHotel>(url)
+      .pipe(
+        tap(data => console.log('getHotel: ' + JSON.stringify(data))),
+        catchError(this.handleError)
       );
   }
-  // Retrieving all keys
-  keys(): Promise<string[]> {
-    return this.storage.keys();
-  }
-  // Retrieving all values
-  getAll(): Promise<IHotel[]> {
-    return this.storage.keys().then((k) => {
-      k.forEach(element => {
-        this.getItem(element).then(
-          (data: IHotel) => this.auxHotelList.push(data)
-        );
-      });
-      return this.auxHotelList;
-    });
-  }
-  // Removes a single stored item
-  remove(reference: string) {
-    this.storage.remove(reference)
-      .then(
-        data => console.log(data),
-        error => console.error(error)
+
+  createHotel(hotel: IHotel): Observable<IHotel> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    hotel.id = null;
+    return this.http.post<IHotel>(this.hotelsUrl, hotel, { headers: headers })
+      .pipe(
+        tap(data => console.log('createHotel: ' + JSON.stringify(data))),
+        catchError(this.handleError)
       );
   }
-  // Removes all stored values.
-  clear() {
-    this.storage.clear()
-      .then(
-        data => console.log(data),
-        error => console.error(error)
+
+  deleteHotel(id: number): Observable<{}> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    const url = `${this.hotelsUrl}/${id}`;
+    return this.http.delete<IHotel>(url, { headers: headers })
+      .pipe(
+        tap(data => console.log('deleteHotel: ' + id)),
+        catchError(this.handleError)
       );
   }
+
+  updateHotel(hotel: IHotel): Observable<IHotel> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    const url = `${this.hotelsUrl}/${hotel.id}`;
+    return this.http.put<IHotel>(url, hotel, { headers: headers })
+      .pipe(
+        tap(() => console.log('updateHotel: ' + hotel.id)),
+        // Return the hotel on an update
+        map(() => hotel),
+        catchError(this.handleError)
+      );
+  }
+
+  private handleError(err) {
+    // in a real world app, we may send the server to some remote logging infrastructure
+    // instead of just logging it to the console
+    let errorMessage: string;
+    if (err.error instanceof ErrorEvent) {
+      // A client-side or network error occurred. Handle it accordingly.
+      errorMessage = `An error occurred: ${err.error.message}`;
+    } else {
+      // The backend returned an unsuccessful response code.
+      // The response body may contain clues as to what went wrong,
+      errorMessage = `Backend returned code ${err.status}: ${err.body.error}`;
+    }
+    console.error(err);
+    return throwError(errorMessage);
+  }
+
 }

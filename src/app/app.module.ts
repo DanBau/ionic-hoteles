@@ -10,6 +10,10 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { IonicStorageModule } from '@ionic/storage';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
+import { HotelData } from './core/hotel-data';
+import { InMemoryWebApiModule } from 'angular-in-memory-web-api';
+import { HoteldbService } from './core/hoteldb.service';
 
 
 @NgModule({
@@ -19,11 +23,13 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
     BrowserModule,
     IonicModule.forRoot(),
     AppRoutingModule,
-    IonicStorageModule.forRoot(),
     ReactiveFormsModule,
     FormsModule,
+    HttpClientModule,
+    InMemoryWebApiModule.forRoot(HotelData)
   ],
   providers: [
+    HoteldbService,
     StatusBar,
     SplashScreen,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }

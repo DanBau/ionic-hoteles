@@ -12,23 +12,18 @@ import { IHotel } from '../share/interfaces';
 })
 export class EditPage implements OnInit {
 
-  id: string;
+  id: number;
   public hotel: IHotel;
   hotelForm: FormGroup;
+  errorMessage: string;
 
   constructor(
-    private activatedrouter: ActivatedRoute,
+    private activatedroute: ActivatedRoute,
     private router: Router,
     private hoteldbService: HoteldbService,
     public toastController: ToastController) { }
 
   ngOnInit() {
-    this.id = this.activatedrouter.snapshot.params.id;
-    this.hoteldbService.getItem(this.id).then(
-      (data: IHotel) => {
-        this.hotel = data;
-        this.displayProduct(this.hotel);
-      });
     this.hotelForm = new FormGroup({
       nombre: new FormControl(''),
       ciudad: new FormControl(''),
@@ -37,10 +32,20 @@ export class EditPage implements OnInit {
       estrellas: new FormControl(''),
       precio: new FormControl(''),
     });
+    this.id = parseInt(this.activatedroute.snapshot.params['id']);
+    this.getHotel(this.id);
   
   }
 
-  displayProduct(hotel: IHotel): void {
+  getHotel(id: number): void {
+    this.hoteldbService.getHotelById(id)
+      .subscribe(
+        (hotel: IHotel) => this.displayHotel(hotel),
+        (error: any) => this.errorMessage = <any>error
+      );
+  }
+
+  displayHotel(hotel: IHotel): void {
     if (this.hotelForm) {
       this.hotelForm.reset();
     }
@@ -84,13 +89,30 @@ export class EditPage implements OnInit {
 
 
   editHotel() {
-    this.hoteldbService.remove(this.hotel.id);
-    this.hotel = this.hotelForm.value;
-    let nextKey = this.hotel.nombre.trim();
-    this.hotel.id = nextKey;
-    this.hoteldbService.setItem(nextKey, this.hotel);
-    console.warn(this.hotelForm.value);
-    this.hoteldbService.remove(this.hotel.id);
+    if (this.hotelForm.valid) {
+      if (this.hotelForm.dirty) {
+        this.hotel = this.hotelForm.value;
+        this.hotel.id = this.id;
+        
+        this.hoteldbService.updateHotel(this.hotel)
+        .subscribe(
+          () => this.onSaveComplete(),
+          (error: any) => this.errorMessage = <any>error
+        );
+      
+        
+      } else {
+        this.onSaveComplete();
+      }
+    } else {
+      this.errorMessage = 'Please correct the validation errors.';
+    }
+  }
+
+  onSaveComplete(): void {
+    // Reset the form to clear the flags
+    this.hotelForm.reset();
+    this.router.navigate(['']);
   }
   async removeRecord(id) {
     const toast = await this.toastController.create({
@@ -102,7 +124,7 @@ export class EditPage implements OnInit {
           icon: 'delete',
           text: 'ACEPTAR',
           handler: () => {
-            this.hoteldbService.remove(id);
+            this.hoteldbService.deleteHotel(id);
             this.router.navigate(['home']);
           }
         }, {
