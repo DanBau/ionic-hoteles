@@ -78,6 +78,7 @@ export class CreatePage implements OnInit {
     }
   }
   onSaveComplete(): void {
+    
     // Reset the form to clear the flags
     this.hotelForm.reset();
     this.router.navigate(['']);

@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 export class HomePage implements OnInit {
 
   public hoteles: IHotel[];
+  haveValues: boolean = false;
 
   constructor(private hoteldbService: HoteldbService, private route:
     Router) { }
@@ -23,12 +24,28 @@ export class HomePage implements OnInit {
 
   ngOnInit(): void {
     // If the database is empty set initial values
+    this.retrieveValues();
+    
+  }
+
+  ionViewDidEnter(){
+    if(this.hoteles !== undefined){
+      this.hoteles.splice(0);
+    }
+    this.retrieveValues();
+  }
+
+  retrieveValues(){
     this.hoteldbService.getHotels().subscribe(
-      (data: IHotel[]) => this.hoteles = data);
+      (data: IHotel[]) => {
+        this.haveValues = false;
+        this.hoteles = data;
+        this.haveValues = true;
+      });
   }
 
   async hotelTapped(hotel) {
-   this.route.navigate(['details', hotel.id]);
+    this.route.navigate(['details', hotel.id]);
   }
 }
 

@@ -31,12 +31,14 @@
           Listado de Hoteles
         </ion-title>
       </ion-list-header>
-      <ion-item *ngFor="let hotel of hoteles" (click)="hotelTapped(hotel)">
-        <ion-thumbnail slot="start">
-          <img src="{{hotel.image}}">
-        </ion-thumbnail>
-        <ion-label> {{hotel.nombre}}</ion-label>
-      </ion-item>
+      <div *ngIf="haveValues">
+        <ion-item *ngFor="let hotel of hoteles" (click)="hotelTapped(hotel)">
+          <ion-thumbnail slot="start">
+            <img src="{{hotel.image}}">
+          </ion-thumbnail>
+          <ion-label> {{hotel.nombre}}</ion-label>
+        </ion-item>
+      </div>
     </ion-list>
   </div>
 
