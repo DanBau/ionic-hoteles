@@ -34,7 +34,7 @@ export class EditPage implements OnInit {
     });
     this.id = parseInt(this.activatedroute.snapshot.params['id']);
     this.getHotel(this.id);
-  
+
   }
 
   getHotel(id: number): void {
@@ -93,14 +93,14 @@ export class EditPage implements OnInit {
       if (this.hotelForm.dirty) {
         this.hotel = this.hotelForm.value;
         this.hotel.id = this.id;
-        
+
         this.hoteldbService.updateHotel(this.hotel)
-        .subscribe(
-          () => this.onSaveComplete(),
-          (error: any) => this.errorMessage = <any>error
-        );
-      
-        
+          .subscribe(
+            () => this.onSaveComplete(),
+            (error: any) => this.errorMessage = <any>error
+          );
+
+
       } else {
         this.onSaveComplete();
       }
@@ -124,8 +124,10 @@ export class EditPage implements OnInit {
           icon: 'delete',
           text: 'ACEPTAR',
           handler: () => {
-            this.hoteldbService.deleteHotel(id);
-            this.router.navigate(['home']);
+            this.hoteldbService.deleteHotel(id).subscribe(
+              () => this.onSaveComplete(),
+              (error: any) => this.errorMessage = <any>error
+            );
           }
         }, {
           text: 'CANCELAR',

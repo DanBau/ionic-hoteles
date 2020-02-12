@@ -32,6 +32,12 @@ export class DetailsPage implements OnInit {
   editRecord(hotel) {
     this.router.navigate(['edit', hotel.id])
   }
+
+  onSaveComplete(): void {
+    // Reset the form to clear the flags
+    this.router.navigate(['']);
+  }
+
   async removeRecord(id) {
     const toast = await this.toastController.create({
       header: 'Elimiar hotel',
@@ -42,8 +48,9 @@ export class DetailsPage implements OnInit {
           icon: 'delete',
           text: 'ACEPTAR',
           handler: () => {
-            this.hoteldbService.deleteHotel(id);
-            this.router.navigate(['home']);
+            this.hoteldbService.deleteHotel(id).subscribe(
+              () => this.onSaveComplete(),
+            );
           }
         }, {
           text: 'CANCELAR',
