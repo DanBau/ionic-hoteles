@@ -41,7 +41,7 @@ export class EditPage implements OnInit {
       estrellas: new FormControl(''),
       precio: new FormControl(''),
     });
-  
+
   }
 
   ionViewDidEnter() {
@@ -54,23 +54,25 @@ export class EditPage implements OnInit {
     this.hoteldbService.read_Hotels().subscribe(data => {
       this.hotels = data.map(e => {
         if (this.id == e.payload.doc.id) {
+          this.id = e.payload.doc.id;
           this.hotel.id = e.payload.doc.id;
-            this.hotel.nombre = e.payload.doc.data()['nombre'];
-            this.hotel.capacidad = e.payload.doc.data()['capacidad'];
-            this.hotel.ciudad = e.payload.doc.data()['ciudad'];
-            this.hotel.image = e.payload.doc.data()['image'];
-            this.hotel.precio = e.payload.doc.data()['precio'];
-            this.hotel.estrellas = e.payload.doc.data()['estrellas'];
-            return {
-              id: e.payload.doc.id,
-              isEdit: false,
-              nombre: e.payload.doc.data()['nombre'],
-              capacidad: e.payload.doc.data()['capacidad'],
-              ciudad: e.payload.doc.data()['ciudad'],
-              image: e.payload.doc.data()['image'],
-              precio: e.payload.doc.data()['precio'],
-              estrellas: e.payload.doc.data()['estrellas'],
-            };
+          this.hotel.nombre = e.payload.doc.data()['nombre'];
+          this.hotel.capacidad = e.payload.doc.data()['capacidad'];
+          this.hotel.ciudad = e.payload.doc.data()['ciudad'];
+          this.hotel.image = e.payload.doc.data()['image'];
+          this.hotel.precio = e.payload.doc.data()['precio'];
+          this.hotel.estrellas = e.payload.doc.data()['estrellas'];
+          this.displayProduct(this.hotel);
+          return {
+            id: e.payload.doc.id,
+            isEdit: false,
+            nombre: e.payload.doc.data()['nombre'],
+            capacidad: e.payload.doc.data()['capacidad'],
+            ciudad: e.payload.doc.data()['ciudad'],
+            image: e.payload.doc.data()['image'],
+            precio: e.payload.doc.data()['precio'],
+            estrellas: e.payload.doc.data()['estrellas'],
+          };
         }
 
       })
@@ -129,7 +131,7 @@ export class EditPage implements OnInit {
     record['image'] = this.hotel.image;
     record['precio'] = this.hotel.precio;
     record['estrellas'] = this.hotel.estrellas;
-    this.hoteldbService.update_Hotel(this.id,this.hotel);
+    this.hoteldbService.update_Hotel(this.id, this.hotel);
   }
   async removeRecord(id) {
     const toast = await this.toastController.create({
