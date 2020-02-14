@@ -63,7 +63,6 @@ export class CreatePage implements OnInit {
   saveHotel() {
     this.hotel = this.hotelForm.value;
     let record = {};
-    record['id'] = this.hotel.id;
     record['nombre'] = this.hotel.nombre;
     record['ciudad'] = this.hotel.ciudad;
     record['capacidad'] = this.hotel.capacidad;

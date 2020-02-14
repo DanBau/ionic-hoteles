@@ -45,7 +45,8 @@ export class DetailsPage implements OnInit {
     this.hoteldbService.read_Hotels().subscribe(data => {
       this.hotels = data.map(e => {
         if (this.id == e.payload.doc.id) {
-          this.hotel.id = e.payload.doc.id;
+            this.id = e.payload.doc.id;
+            this.hotel.id = e.payload.doc.id;
             this.hotel.nombre = e.payload.doc.data()['nombre'];
             this.hotel.capacidad = e.payload.doc.data()['capacidad'];
             this.hotel.ciudad = e.payload.doc.data()['ciudad'];

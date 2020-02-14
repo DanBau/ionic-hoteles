@@ -13,7 +13,7 @@
   <ion-content>
     <ion-card class="welcome-card">
       <ion-slides pager="true" [options]="slideOpts">
-        <ion-slide *ngFor="let hotel of hoteles">
+        <ion-slide *ngFor="let hotel of hotels">
           <ion-card-content> 
             <ion-title size="large" color="primary" background="primary">{{ hotel.nombre }}</ion-title>
   
@@ -31,7 +31,7 @@
           Listado de Hoteles
         </ion-title>
       </ion-list-header>
-      <ion-item *ngFor="let hotel of hoteles" (click)="hotelTapped(hotel)">
+      <ion-item *ngFor="let hotel of hotels" (click)="hotelTapped(hotel)">
         <ion-thumbnail slot="start">
           <img src="{{hotel.image}}">
         </ion-thumbnail>
