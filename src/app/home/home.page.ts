@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { IHotel } from '../share/interfaces';
-import { HoteldbService } from '../core/hoteldb.service';
+import { HotelcrudService } from '../core/hotelcrud.service';
 import { Router } from '@angular/router';
 
 
@@ -11,38 +11,9 @@ import { Router } from '@angular/router';
 })
 export class HomePage implements OnInit {
 
-  public hoteles: IHotel[];
-  hotelesinit: IHotel[] = [
-    {
-      id: '1',
-      nombre: "Hotel1",
-      ciudad: "Pamplona",
-      image: "../../assets/img/hotel1.jpg",
-      capacidad: 1000,
-      estrellas: 1,
-      precio: 50
-    },
-    {
-      id: '2',
-      nombre: "Hotel2",
-      ciudad: "Valencia",
-      image: "../../assets/img/hotel2.jpg",
-      capacidad: 2000,
-      estrellas: 2,
-      precio: 100
-    },
-    {
-      id: '3',
-      nombre: "Hotel3",
-      ciudad: "Barcelona",
-      image: "../../assets/img/hotel3.jpg",
-      capacidad: 2000,
-      estrellas: 2,
-      precio: 100
-    }
-  ];
+  public hotels: IHotel[];
 
-  constructor(private hoteldbService: HoteldbService, private route:
+  constructor(private hoteldbService: HotelcrudService, private route:
     Router) { }
 
   slideOpts = {
@@ -52,30 +23,32 @@ export class HomePage implements OnInit {
 
   ngOnInit(): void {
     // If the database is empty set initial values
-    this.inicialization();
+    this.retrieveValues();
   }
   ionViewDidEnter() {
     // Remove elements if it already has values
-    if (this.hoteles !== undefined) {
-      this.hoteles.splice(0);
-    }
     this.retrieveValues();
   }
-  inicialization() {
-    if (this.hoteldbService.empty()) {
-      this.hotelesinit.forEach(hotel => {
-        this.hoteldbService.setItem(hotel.id, hotel);
-      });
-    }
-  }
   retrieveValues() {
-    // Retrieve values
-    this.hoteldbService.getAll().then(
-      (data) => this.hoteles = data
-    );
+    this.hoteldbService.read_Hotels().subscribe(data => {
+      this.hotels = data.map(e => {
+        return {
+          id: e.payload.doc.id,
+          isEdit: false,
+          nombre: e.payload.doc.data()['nombre'],
+          capacidad: e.payload.doc.data()['capacidad'],
+          ciudad: e.payload.doc.data()['ciudad'],
+          image: e.payload.doc.data()['image'],
+          precio: e.payload.doc.data()['precio'],
+          estrellas: e.payload.doc.data()['estrellas'],
+        };
+      })
+      console.log(this.hotels);
+    });
+
   }
   async hotelTapped(hotel) {
-   this.route.navigate(['details', hotel.id]);
+    this.route.navigate(['details', hotel.id]);
   }
 }
 

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
-import { HoteldbService } from '../core/hoteldb.service';
+import { HotelcrudService } from '../core/hotelcrud.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { IHotel } from '../share/interfaces';
@@ -13,22 +13,26 @@ import { IHotel } from '../share/interfaces';
 export class EditPage implements OnInit {
 
   id: string;
-  public hotel: IHotel;
+  public hotels: IHotel[];
+  hotel: IHotel = {
+    id: undefined,
+    nombre: undefined,
+    ciudad: undefined,
+    capacidad: undefined,
+    estrellas: undefined,
+    precio: undefined,
+    image: undefined
+  }
   hotelForm: FormGroup;
 
   constructor(
     private activatedrouter: ActivatedRoute,
     private router: Router,
-    private hoteldbService: HoteldbService,
+    private hoteldbService: HotelcrudService,
     public toastController: ToastController) { }
 
   ngOnInit() {
-    this.id = this.activatedrouter.snapshot.params.id;
-    this.hoteldbService.getItem(this.id).then(
-      (data: IHotel) => {
-        this.hotel = data;
-        this.displayProduct(this.hotel);
-      });
+    this.retrieveValues();
     this.hotelForm = new FormGroup({
       nombre: new FormControl(''),
       ciudad: new FormControl(''),
@@ -40,11 +44,44 @@ export class EditPage implements OnInit {
   
   }
 
+  ionViewDidEnter() {
+    // Remove elements if it already has values
+    this.retrieveValues();
+  }
+
+  retrieveValues() {
+    this.id = this.activatedrouter.snapshot.params.id;
+    this.hoteldbService.read_Hotels().subscribe(data => {
+      this.hotels = data.map(e => {
+        if (this.id == e.payload.doc.id) {
+          this.hotel.id = e.payload.doc.id;
+            this.hotel.nombre = e.payload.doc.data()['nombre'];
+            this.hotel.capacidad = e.payload.doc.data()['capacidad'];
+            this.hotel.ciudad = e.payload.doc.data()['ciudad'];
+            this.hotel.image = e.payload.doc.data()['image'];
+            this.hotel.precio = e.payload.doc.data()['precio'];
+            this.hotel.estrellas = e.payload.doc.data()['estrellas'];
+            return {
+              id: e.payload.doc.id,
+              isEdit: false,
+              nombre: e.payload.doc.data()['nombre'],
+              capacidad: e.payload.doc.data()['capacidad'],
+              ciudad: e.payload.doc.data()['ciudad'],
+              image: e.payload.doc.data()['image'],
+              precio: e.payload.doc.data()['precio'],
+              estrellas: e.payload.doc.data()['estrellas'],
+            };
+        }
+
+      })
+      console.log(this.hotel);
+    });
+  }
+
   displayProduct(hotel: IHotel): void {
     if (this.hotelForm) {
       this.hotelForm.reset();
     }
-    this.hotel = hotel;
 
     // Update the data on the form
     this.hotelForm.patchValue({
@@ -84,13 +121,15 @@ export class EditPage implements OnInit {
 
 
   editHotel() {
-    this.hoteldbService.remove(this.hotel.id);
     this.hotel = this.hotelForm.value;
-    let nextKey = this.hotel.nombre.trim();
-    this.hotel.id = nextKey;
-    this.hoteldbService.setItem(nextKey, this.hotel);
-    console.warn(this.hotelForm.value);
-    this.hoteldbService.remove(this.hotel.id);
+    let record = {};
+    record['nombre'] = this.hotel.nombre;
+    record['capacidad'] = this.hotel.capacidad;
+    record['ciudad'] = this.hotel.ciudad;
+    record['image'] = this.hotel.image;
+    record['precio'] = this.hotel.precio;
+    record['estrellas'] = this.hotel.estrellas;
+    this.hoteldbService.update_Hotel(this.id,this.hotel);
   }
   async removeRecord(id) {
     const toast = await this.toastController.create({
@@ -102,7 +141,7 @@ export class EditPage implements OnInit {
           icon: 'delete',
           text: 'ACEPTAR',
           handler: () => {
-            this.hoteldbService.remove(id);
+            this.hoteldbService.delete_Hotel(id);
             this.router.navigate(['home']);
           }
         }, {

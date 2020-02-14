@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
-import { HoteldbService } from '../core/hoteldb.service';
+import { HotelcrudService } from '../core/hotelcrud.service';
 import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { IHotel } from '../share/interfaces';
@@ -15,9 +15,15 @@ export class CreatePage implements OnInit {
 
   hotel: IHotel;
   hotelForm: FormGroup;
+  hotelNombre: string;
+  hotelCiudad: string;
+  hotelImage:string;
+  hotelCapacidad:number;
+  hotelEstrellas:number;
+  hotelPrecio:number;
 
   constructor(private router: Router,
-    private hoteldbService: HoteldbService,
+    private hotelcrud: HotelcrudService,
     public toastController: ToastController) { }
 
   ngOnInit() {
@@ -56,10 +62,20 @@ export class CreatePage implements OnInit {
   }
   saveHotel() {
     this.hotel = this.hotelForm.value;
-    let nextKey = this.hotel.nombre.trim();
-    this.hotel.id = nextKey;
-    this.hoteldbService.setItem(nextKey, this.hotel);
-    console.warn(this.hotelForm.value);
+    let record = {};
+    record['id'] = this.hotel.id;
+    record['nombre'] = this.hotel.nombre;
+    record['ciudad'] = this.hotel.ciudad;
+    record['capacidad'] = this.hotel.capacidad;
+    record['image'] = this.hotel.image;
+    record['precio'] = this.hotel.precio;
+    record['estrellas'] = this.hotel.estrellas;
+    this.hotelcrud.create_Hotel(record).then(resp => {
+      console.log(resp);
+    })
+      .catch(error => {
+        console.log(error);
+      });
   }
 }
 
