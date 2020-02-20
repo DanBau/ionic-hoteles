@@ -8,14 +8,16 @@ import { catchError, tap, map } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class HoteldbService {
-  private hotelsUrl = 'api/hotels';
+  private hotelsUrl = '127.0.0.1:8100/hotels';
 
   constructor(private http: HttpClient) { }
 
   getHotels(): Observable<IHotel[]> {
     return this.http.get<IHotel[]>(this.hotelsUrl)
       .pipe(
-        tap(data => console.log(JSON.stringify(data))),
+        tap(data => {
+          console.log(JSON.stringify(data));
+        }),
         catchError(this.handleError)
       );
   }
