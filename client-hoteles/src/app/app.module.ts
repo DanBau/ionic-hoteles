@@ -11,8 +11,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { IonicStorageModule } from '@ionic/storage';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { HotelData } from './core/hotel-data';
-import { InMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { HoteldbService } from './core/hoteldb.service';
 
 
@@ -26,7 +24,6 @@ import { HoteldbService } from './core/hoteldb.service';
     ReactiveFormsModule,
     FormsModule,
     HttpClientModule,
-    InMemoryWebApiModule.forRoot(HotelData)
   ],
   providers: [
     HoteldbService,

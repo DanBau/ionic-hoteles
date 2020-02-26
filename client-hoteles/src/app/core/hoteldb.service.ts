@@ -8,7 +8,7 @@ import { catchError, tap, map } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class HoteldbService {
-  private hotelsUrl = '127.0.0.1:8100/hotels';
+  private hotelsUrl = 'http://localhost:8000/hotels';
 
   constructor(private http: HttpClient) { }
 

@@ -23,7 +23,7 @@ function getHotels() {
     return hotels;
 }
 app.use(function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "http://localhost:4200"); // update to match the domain you will make the request from
+    res.header("Access-Control-Allow-Origin", "http://localhost:8100"); // update to match the domain you will make the request from
     res.header("Access-Control-Allow-Methods", "POST, PUT, GET, DELETE");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
@@ -80,7 +80,7 @@ function deleteHotelsById(hotelId) {
     var p;
     p = hotels.find(function (p) { return p.id == hotelId; });
     var index = hotels.indexOf(p);
-    delete hotels[index];
+    hotels.splice(index, 1);
     return p;
 }
 app["delete"]('/hotels/:id', function (req, res) {

@@ -62,7 +62,7 @@ function getHotels(): any[] {
 }
 
 app.use(function (req: any, res: any, next: any) {
-  res.header("Access-Control-Allow-Origin", "127.0.0.1:8100"); // update to match the domain you will make the request from
+  res.header("Access-Control-Allow-Origin", "http://localhost:8100"); // update to match the domain you will make the request from
   res.header("Access-Control-Allow-Methods", "POST, PUT, GET, DELETE");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
@@ -148,7 +148,7 @@ function deleteHotelsById(hotelId: number): any {
   let p: any;
   p = hotels.find(p => p.id == hotelId);
   let index = hotels.indexOf(p);
-  delete hotels[index];
+  hotels.splice(index,1);
   return p;
 }
 
