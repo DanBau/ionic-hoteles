@@ -24,8 +24,8 @@ export class HomePage implements OnInit {
 
   ngOnInit(): void {
     // If the database is empty set initial values
+    this.ionViewDidEnter();
     this.retrieveValues();
-    
   }
 
   ionViewDidEnter(){
